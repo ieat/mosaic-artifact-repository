@@ -10,5 +10,5 @@ elif [ $ARCH == "Darwin" ]; then
    DIR=`python -c "$CMD"`
 fi
 
-. $DIR/bin/activate
+#. $DIR/bin/activate
 python $DIR/runtime/artifact-repository.py

@@ -50,7 +50,7 @@ def arListArtifacts(repository):
     _artiList = os.listdir(_repoPath)
     return jsonify(lf.getReturnMessage(0, "The list of artifacts in repository: " + repository, _artiList))
 
-@app.route(arApiPath + '/<repository>/<artifact>', methods=['GET'])
+@app.route(arApiPath + '/<repository>/artifacts/<artifact>', methods=['GET'])
 def arListArtifactVersions(repository, artifact):
     _rd = repository + "/" + artifact
     _c, _m = la.checkArtifact(arPath, repository, artifact)
@@ -61,7 +61,7 @@ def arListArtifactVersions(repository, artifact):
     _artiVersList = os.listdir(_artiPath)
     return jsonify(lf.getReturnMessage(0, "The list of available versions of artifact: " + artifact, _artiVersList))
 
-@app.route(arApiPath + '/<repository>/<artifact>/<version>/files', methods=['GET'])
+@app.route(arApiPath + '/<repository>/artifacts/<artifact>/<version>/files', methods=['GET'])
 def arListArtifactVersionFiles(repository, artifact, version):
     _rd = repository + "/" + artifact + "/" + version
     _c, _m = la.checkArtifactVersion(arPath, repository, artifact, version)
