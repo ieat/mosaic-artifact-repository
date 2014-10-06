@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 '''
 Copyright 2014, Institute e-Austria, Timisoara, Romania
     http://www.ieat.ro/
