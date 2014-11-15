@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 '''
 Copyright 2014, Institute e-Austria, Timisoara, Romania
     http://www.ieat.ro/
@@ -38,7 +39,14 @@ la = lib.Artifact()
 
 app = Flask('artifact-repository')
 
-@app.route(arApiPath + '/<repository>/artifacts', methods=['GET'])
+@app.route('/', methods=['GET'])
+def arIndex():
+    _ret = {}
+    _ret['apiVersion'] = arApiPath
+    _ret['documenation'] = 'https://wiki.ieat.ro/SilviuPanica/Projects/mOSAIC/ArtifactRepository'
+    return jsonify(lf.getReturnMessage(0, "mOSAIC Artifact Repository", _ret))
+
+@app.route(arApiPath + '/repositories/<repository>/artifacts', methods=['GET'])
 def arListArtifacts(repository):
     _c, _m = la.checkRepository(arPath, repository)
     if _c == 1:
@@ -48,7 +56,7 @@ def arListArtifacts(repository):
     _artiList = os.listdir(_repoPath)
     return jsonify(lf.getReturnMessage(0, "The list of artifacts in repository: " + repository, _artiList))
 
-@app.route(arApiPath + '/<repository>/artifacts/<artifact>', methods=['GET'])
+@app.route(arApiPath + '/repositories/<repository>/artifacts/<artifact>', methods=['GET'])
 def arListArtifactVersions(repository, artifact):
     _rd = repository + "/" + artifact
     _c, _m = la.checkArtifact(arPath, repository, artifact)
@@ -59,7 +67,7 @@ def arListArtifactVersions(repository, artifact):
     _artiVersList = os.listdir(_artiPath)
     return jsonify(lf.getReturnMessage(0, "The list of available versions of artifact: " + artifact, _artiVersList))
 
-@app.route(arApiPath + '/<repository>/artifacts/<artifact>/<version>/files', methods=['GET'])
+@app.route(arApiPath + '/repositories/<repository>/artifacts/<artifact>/<version>/files', methods=['GET'])
 def arListArtifactVersionFiles(repository, artifact, version):
     _rd = repository + "/" + artifact + "/" + version
     _c, _m = la.checkArtifactVersion(arPath, repository, artifact, version)
@@ -70,13 +78,13 @@ def arListArtifactVersionFiles(repository, artifact, version):
     _artiVerFilesList = os.listdir(_artiVerPath)
     return jsonify(lf.getReturnMessage(0, "The list of available files of artifact version: " + artifact + "/" + version, _artiVerFilesList))
 
-@app.route(arApiPath + '/<repository>/artifacts/<artifact>/<version>', methods=['PUT'])
+@app.route(arApiPath + '/repositories/<repository>/artifacts/<artifact>/<version>', methods=['PUT'])
 def arCreateArtifactVersion(repository, artifact, version):   
     _rd = repository + "/" + artifact + "/" + version 
     _c, _m = la.checkArtifact(arPath, repository, artifact)
     if _c == 1:
         try:
-            os.makedirs(os.path.join(arPath, repository, artifact))
+            os.makedirs(os.path.join(arPath, repository, artifact, version))
         except:
             return jsonify(lf.getReturnMessage(1, "Error creating artifact directory", repository + "/" + artifact))
     else:
@@ -90,7 +98,7 @@ def arCreateArtifactVersion(repository, artifact, version):
                 return jsonify(lf.getReturnMessage(1, "Error creating artifact version directory", _rd))
     return jsonify(lf.getReturnMessage(0, "Artifact version created successfully", _rd))
 
-@app.route(arApiPath + '/<repository>/artifacts/<artifact>', methods=['DELETE'])
+@app.route(arApiPath + '/repositories/<repository>/artifacts/<artifact>', methods=['DELETE'])
 def arDeleteArtifact(repository, artifact):
     _rd = repository + "/" + artifact
     _c, _m = la.checkArtifact(arPath, repository, artifact)
@@ -102,7 +110,7 @@ def arDeleteArtifact(repository, artifact):
         return jsonify(lf.getReturnMessage(1, "An error occured when tried to delete artifact", _rd))
     return jsonify(lf.getReturnMessage(0, "Artifact removed with all its content", _rd))
 
-@app.route(arApiPath + '/<repository>/artifacts/<artifact>/<version>', methods=['DELETE'])
+@app.route(arApiPath + '/repositories/<repository>/artifacts/<artifact>/<version>', methods=['DELETE'])
 def arDeleteArtifactVersion(repository, artifact, version):
     _rd = repository + "/" + artifact + "/" + version
     _c, _m = la.checkArtifactVersion(arPath, repository, artifact, version)
@@ -114,7 +122,7 @@ def arDeleteArtifactVersion(repository, artifact, version):
         return jsonify(lf.getReturnMessage(1, "An error occured when tried to delete artifact version", _rd))
     return jsonify(lf.getReturnMessage(0, "Artifact version removed with all its content", _rd))
     
-@app.route(arApiPath + '/<repository>/artifacts/<artifact>/<version>/files/<file>', methods=['DELETE'])
+@app.route(arApiPath + '/repositories/<repository>/artifacts/<artifact>/<version>/files/<file>', methods=['DELETE'])
 def arDeleteArtifactVersionFile(repository, artifact, version, file):
     _rd = repository + "/" + artifact + "/" + version + "/" + file
     _c, _m = la.checkArtifactVersionFile(arPath, repository, artifact, version, file)
@@ -126,7 +134,7 @@ def arDeleteArtifactVersionFile(repository, artifact, version, file):
         jsonify(lf.getReturnMessage(1, "An error occured when tried to delete the file from artifact version", _rd))
     return jsonify(lf.getReturnMessage(0, "File removed from artifact version", _rd))
 
-@app.route(arApiPath + '/<repository>/artifacts/<artifact>/<version>/files/<file>', methods=['GET', 'PUT'])
+@app.route(arApiPath + '/repositories/<repository>/artifacts/<artifact>/<version>/files/<file>', methods=['GET', 'PUT'])
 def arUploadDownloadArtifactVersionFile(repository, artifact, version, file):
     _rd = repository + "/" + artifact + "/" + version + "/" + file
     _c, _m = la.checkArtifactVersion(arPath, repository, artifact, version)

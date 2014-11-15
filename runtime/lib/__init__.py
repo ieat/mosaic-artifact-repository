@@ -19,7 +19,7 @@ limitations under the License.
 import os, json
 
 class Config(object):
-    apiVersion = '/v1/repositories'
+    apiVersion = '/v1'
 
 class Artifact(object):
     def checkRepository(self, arPath, repository):
